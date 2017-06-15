@@ -111,8 +111,8 @@ public class Slider extends Circle {
 		for (int j = 0; j < endCircles.size() - 1; j++) {
 			if (!(j == 1 && hitcircleVisible)) {
 				reverseArrow.setRotation(angles[j % 2]);
-				g.drawImage(reverseArrow, (int) endCircles.get(j).x - circleSize / 2,
-						(int) endCircles.get(j).y - circleSize / 2);
+				g.drawImage(reverseArrow, (int) endCircles.get(j).x - reverseArrow.getWidth() / 2,
+						(int) endCircles.get(j).y - reverseArrow.getHeight() / 2);
 			}
 		}
 		g.setColor(Color.white);
@@ -123,8 +123,8 @@ public class Slider extends Circle {
 		this.circleSize = (int) ((109 - 9 * circleSize) * resConverter);
 		length = length * kicks;
 		this.calculateCurve();
-		this.calculateKicks();
 		this.repositionPoints();
+		this.calculateKicks();
 		this.createShape();
 		this.calculateAngles();
 	}
@@ -220,13 +220,13 @@ public class Slider extends Circle {
 	 * in to account.
 	 */
 	private void calculateKicks() {
-		endCircles.add(sliderTrack.get(sliderTrack.size() - 1));
+		endCircles.add(newTrack.get(newTrack.size() - 1));
 		if (kicks > 1) {
-			int initLength = sliderTrack.size();
+			int initLength = newTrack.size();
 			for (int i = 1; i < kicks; i++) {
 				ArrayList<Point> pTemp = new ArrayList<Point>();
 				for (int j = 0; j < initLength; j++) {
-					Point p = sliderTrack.get(sliderTrack.size() - 1 - j);
+					Point p = newTrack.get(newTrack.size() - 1 - j);
 					pTemp.add(p);
 					if (j == initLength - 1) {
 						endCircles.add(p);
@@ -234,8 +234,8 @@ public class Slider extends Circle {
 				}
 				for (int j = 0; j < pTemp.size(); j++) {
 					pointLength.add(pointLength.get(pointLength.size() - 1)
-							+ pTemp.get(j).distance(sliderTrack.get(sliderTrack.size() - 1)));
-					sliderTrack.add(pTemp.get(j));
+							+ pTemp.get(j).distance(newTrack.get(newTrack.size() - 1)));
+					newTrack.add(pTemp.get(j));
 				}
 			}
 		}

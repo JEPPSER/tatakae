@@ -20,7 +20,7 @@ public class ImageHandler {
 	 */
 	public static Image buildReverseArrow(int circleSize){
 		try {
-			return new Image("./resources/reversearrow.png").getScaledCopy(circleSize, circleSize);
+			return new Image("./resources/reversearrow.png").getScaledCopy(circleSize - circleSize / 10, circleSize - circleSize / 10);
 		} catch (SlickException e) {
 			e.printStackTrace();
 			return null;
