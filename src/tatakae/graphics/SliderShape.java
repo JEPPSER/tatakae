@@ -3,14 +3,15 @@ package tatakae.graphics;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Ellipse;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
 
 /**
- * Class that extends polygon and represents the shape for a slider.
- * This shape will be drawn in the render method in the Slider class.
+ * Class that extends polygon and represents the shape for a slider. This shape
+ * will be drawn in the render method in the Slider class.
  * 
  * @author Jesper Bergstrom
  * @version 0.00.00
@@ -52,6 +53,12 @@ public class SliderShape extends Polygon {
 		return null;
 	}
 
+	/**
+	 * Adds a new shape to the SliderShape and merges them.
+	 * 
+	 * @param shape
+	 * @return SliderShape
+	 */
 	public SliderShape add(Shape shape) {
 		if (super.intersects(shape)) {
 			SliderShape newShape = new SliderShape(track, circleSize);
@@ -95,7 +102,7 @@ public class SliderShape extends Polygon {
 				}
 			}
 		}
-		
+
 		// Fix the indexes of the points.
 		newPoints = reIndex(newPoints);
 

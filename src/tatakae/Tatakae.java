@@ -23,7 +23,7 @@ public class Tatakae {
 	public static void main(String[] args) throws FileNotFoundException {
 		AppGameContainer screen = null;
 		Game game = new Game("Game");
-		game.playMap(new File("./resources/kramg0 - pp testing (Kramg0) [spacing].osu"), width, height);
+		game.playMap(new File("./resources/Helblinde - The battle for everyone's souls (Helblinde Remix) (Kramg0) [Shadows].osu"), width, height);
 		try {
 			screen = new AppGameContainer(game);
 			screen.setDisplayMode(width, height, false);

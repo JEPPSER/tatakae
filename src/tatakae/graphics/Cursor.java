@@ -21,6 +21,7 @@ public class Cursor {
 	private Image cursor;
 	private Image cursorTrail;
 	private ArrayList<Point> trail;
+	private ArrayList<Long> duration;
 	private int cursorSize;
 
 	public Cursor(int cursorSize) {
@@ -28,6 +29,7 @@ public class Cursor {
 		cursor = ImageHandler.buildCursor(cursorSize);
 		cursorTrail = ImageHandler.buildCursorTrail(cursorSize);
 		trail = new ArrayList<Point>();
+		duration = new ArrayList<Long>();
 	}
 
 	/**
@@ -44,17 +46,20 @@ public class Cursor {
 		if (fps == 0) {
 			fps = 3000;
 		}
-		if (!trail.isEmpty() && System.currentTimeMillis() % (fps / 300) == 0) {
+		if (!trail.isEmpty() && point.distance(trail.get(trail.size() - 1)) > 5) {
 			trail.add(point);
+			duration.add(System.currentTimeMillis());
 		} else if (trail.isEmpty()) {
 			trail.add(point);
+			duration.add(System.currentTimeMillis());
 		}
-		if (trail.size() > 30) {
+		if (System.currentTimeMillis() - duration.get(0) > 150) {
 			trail.remove(0);
+			duration.remove(0);
 		}
 		// Draw cursor trail.
 		for (int i = 0; i < trail.size(); i++) {
-			g.drawImage(cursorTrail, trail.get(i).x - cursorSize / 2, trail.get(i).y - cursorSize / 2);
+			g.drawImage(cursorTrail, trail.get(i).x - cursorTrail.getWidth() / 2, trail.get(i).y - cursorTrail.getHeight() / 2);
 		}
 		g.drawImage(cursor, x - cursorSize / 2, y - cursorSize / 2);
 	}
