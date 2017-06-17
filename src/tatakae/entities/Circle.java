@@ -161,4 +161,16 @@ public class Circle implements HitObject {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public void setSpinnerSize(int height) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getSpinnerSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

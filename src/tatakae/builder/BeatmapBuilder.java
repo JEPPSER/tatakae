@@ -9,6 +9,7 @@ import java.util.Scanner;
 import tatakae.entities.Beatmap;
 import tatakae.entities.Circle;
 import tatakae.entities.Slider;
+import tatakae.entities.Spinner;
 import tatakae.entities.TimingPoint;
 
 /**
@@ -293,6 +294,15 @@ public class BeatmapBuilder {
 
 			if (parts.length <= 6) {
 				beatmap.add(circle);
+			} else if (parts.length == 7) {
+				Spinner spinner = new Spinner();
+				spinner.setTime(Long.parseLong(parts[2]));
+				long length = Long.parseLong(parts[5]) - Long.parseLong(parts[2]);
+				spinner.setLength(length);
+				spinner.setXPosition(circle.getXPosition());
+				spinner.setYPosition(circle.getYPosition());
+				spinner.setSpinnerSize(height);
+				beatmap.add(spinner);
 			} else if (parts.length > 7) {
 				Slider slider = new Slider(width, height);
 				slider.setXPosition(circle.getXPosition());

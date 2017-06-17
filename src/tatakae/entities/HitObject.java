@@ -190,6 +190,21 @@ public interface HitObject {
 	 * @param circleSize
 	 * @param hitcircle
 	 * @param hitcircleoverlay
+	 * @param height
 	 */
 	public void render(Graphics g, int circleSize, Image hitcircle, Image hitcircleoverlay, Image reverseArrow);
+	
+	/**
+	 * Method for setting the spinner size.
+	 * 
+	 * @param height
+	 */
+	public void setSpinnerSize(int height);
+	
+	/**
+	 * Method for getting the spinner size.
+	 * 
+	 * @return spinner size
+	 */
+	public int getSpinnerSize();
 }

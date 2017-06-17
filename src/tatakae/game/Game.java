@@ -19,6 +19,7 @@ import tatakae.controllers.GameController;
 import tatakae.entities.Beatmap;
 import tatakae.graphics.HitImage;
 import tatakae.entities.Slider;
+import tatakae.entities.Spinner;
 import tatakae.entities.HitObject;
 import tatakae.entities.OD;
 import tatakae.graphics.ApproachCircle;
@@ -70,8 +71,8 @@ public class Game extends BasicGame {
 	}
 
 	/**
-	 * Method that starts a play. It takes a beatmap file
-	 * and creates a play based on that.
+	 * Method that starts a play. It takes a beatmap file and creates a play
+	 * based on that.
 	 * 
 	 * @param map
 	 * @param width
@@ -84,7 +85,7 @@ public class Game extends BasicGame {
 		this.map = builder.readFile(map);
 		circleSize = (int) ((109 - 9 * this.map.getCircleSize()) * resConverter);
 	}
-	
+
 	/**
 	 * Render loop that renders all objects on screen.
 	 */
@@ -151,8 +152,8 @@ public class Game extends BasicGame {
 	}
 
 	/**
-	 * Returns the current time of the play. This is how long
-	 * the play has been going for.
+	 * Returns the current time of the play. This is how long the play has been
+	 * going for.
 	 * 
 	 * @return time
 	 */
@@ -236,11 +237,17 @@ public class Game extends BasicGame {
 	}
 
 	/**
-	 * Registers a circle when it is supposed to show up on screen.
-	 * It adds the circle to the added list.
+	 * Registers a circle when it is supposed to show up on screen. It adds the
+	 * circle to the added list.
 	 */
 	private void registerCircle() {
-		if (index < map.getList().size() && time >= map.getList().get(index).getTime() - approachRate) {
+		if(map.getList().get(index).getClass() == Spinner.class && time >= map.getList().get(index).getTime()){
+			added.add(map.getList().get(index));
+			index++;
+			if (added.size() == 1) {
+				currentObject = added.get(0);
+			}
+		} else if (index < map.getList().size() && time >= map.getList().get(index).getTime() - approachRate) {
 			added.add(map.getList().get(index)); // add circle to list.
 			index++;
 			if (added.size() == 1) {
@@ -258,6 +265,13 @@ public class Game extends BasicGame {
 		if (!added.isEmpty() && currentObject != null) {
 			if (currentObject.getClass() == Slider.class) {
 				sliderLogic(input);
+			} else if (currentObject.getClass() == Spinner.class) {
+				if(time >= currentObject.getTime() + currentObject.getLength()){
+					added.remove(currentObject);
+					if (!added.isEmpty()) {
+						currentObject = added.get(0);
+					}
+				}
 			} else if (time >= added.get(0).getTime() + od.getHit50()) {
 				timePassed = 0;
 				added.remove(currentObject);
@@ -365,13 +379,15 @@ public class Game extends BasicGame {
 					g.drawOval(x - circleSize, y - circleSize, circleSize * 2, circleSize * 2);
 				}
 			}
-			ApproachCircle.drawApproachCircle(g, added.get(i), circleSize, approachRate);
+			if(added.get(i).getClass() != Spinner.class){
+				ApproachCircle.drawApproachCircle(g, added.get(i), circleSize, approachRate);
+			}
 		}
 	}
 
 	/**
-	 * Converts the ar given in the beatmap file to a long variable
-	 * representing the time a circle should be visible on screen.
+	 * Converts the ar given in the beatmap file to a long variable representing
+	 * the time a circle should be visible on screen.
 	 * 
 	 * @param ar
 	 * @return
