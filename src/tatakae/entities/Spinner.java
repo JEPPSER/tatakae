@@ -16,7 +16,7 @@ import org.newdawn.slick.geom.Ellipse;
  * @name Spinner.java
  */
 public class Spinner implements HitObject {
-	
+
 	private long time;
 	private long length;
 	private long duration;
@@ -136,13 +136,11 @@ public class Spinner implements HitObject {
 
 	@Override
 	public void setStartTime(long startTime) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public long getStartTime() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -150,8 +148,9 @@ public class Spinner implements HitObject {
 	public void render(Graphics g, int circleSize, Image hitcircle, Image hitcircleoverlay, Image reverseArrow) {
 		g.setColor(Color.white);
 		g.setAntiAlias(false);
-		g.setLineWidth(20);
+		g.setLineWidth(size / 40);
 		g.drawOval(x - (size - 100) / 2, 50, size - 100, size - 100);
+		this.drawSpinnerApproarchCircle(g);
 	}
 
 	@Override
@@ -162,5 +161,14 @@ public class Spinner implements HitObject {
 	@Override
 	public int getSpinnerSize() {
 		return size;
+	}
+
+	private void drawSpinnerApproarchCircle(Graphics g) {
+		double percent = (double) duration / (double) length;
+		int width = (int) ((size - 100) * (1 - percent));
+		int x = this.x - width / 2;
+		int y = (int) (50 + duration / 2);
+		g.setLineWidth((float) ((size / 40) * (1 - percent)));
+		g.drawOval(x, y, width, width);
 	}
 }

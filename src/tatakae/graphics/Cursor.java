@@ -46,14 +46,14 @@ public class Cursor {
 		if (fps == 0) {
 			fps = 3000;
 		}
-		if (!trail.isEmpty() && point.distance(trail.get(trail.size() - 1)) > 5) {
+		if (!trail.isEmpty() && point.distance(trail.get(trail.size() - 1)) > cursorSize / 3) {
 			trail.add(point);
 			duration.add(System.currentTimeMillis());
 		} else if (trail.isEmpty()) {
 			trail.add(point);
 			duration.add(System.currentTimeMillis());
 		}
-		if (System.currentTimeMillis() - duration.get(0) > 150) {
+		if (System.currentTimeMillis() - duration.get(0) > 100) {
 			trail.remove(0);
 			duration.remove(0);
 		}

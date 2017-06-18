@@ -50,7 +50,7 @@ public class ImageHandler {
 	 */
 	public static Image buildCursorTrail(int cursorSize) {
 		try {
-			return new Image("./resources/cursortrail.png").getScaledCopy(cursorSize / 4, cursorSize / 4);
+			return new Image("./resources/cursortrail.png").getScaledCopy(cursorSize, cursorSize);
 		} catch (SlickException e) {
 			e.printStackTrace();
 			return null;

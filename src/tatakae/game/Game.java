@@ -241,13 +241,14 @@ public class Game extends BasicGame {
 	 * circle to the added list.
 	 */
 	private void registerCircle() {
-		if(map.getList().get(index).getClass() == Spinner.class && time >= map.getList().get(index).getTime()){
+		if (map.getList().get(index).getClass() == Spinner.class && time >= map.getList().get(index).getTime()) {
 			added.add(map.getList().get(index));
 			index++;
 			if (added.size() == 1) {
 				currentObject = added.get(0);
 			}
-		} else if (index < map.getList().size() && time >= map.getList().get(index).getTime() - approachRate) {
+		} else if (map.getList().get(index).getClass() != Spinner.class && index < map.getList().size()
+				&& time >= map.getList().get(index).getTime() - approachRate) {
 			added.add(map.getList().get(index)); // add circle to list.
 			index++;
 			if (added.size() == 1) {
@@ -266,7 +267,7 @@ public class Game extends BasicGame {
 			if (currentObject.getClass() == Slider.class) {
 				sliderLogic(input);
 			} else if (currentObject.getClass() == Spinner.class) {
-				if(time >= currentObject.getTime() + currentObject.getLength()){
+				if (time >= currentObject.getTime() + currentObject.getLength()) {
 					added.remove(currentObject);
 					if (!added.isEmpty()) {
 						currentObject = added.get(0);
@@ -379,7 +380,7 @@ public class Game extends BasicGame {
 					g.drawOval(x - circleSize, y - circleSize, circleSize * 2, circleSize * 2);
 				}
 			}
-			if(added.get(i).getClass() != Spinner.class){
+			if (added.get(i).getClass() != Spinner.class) {
 				ApproachCircle.drawApproachCircle(g, added.get(i), circleSize, approachRate);
 			}
 		}
