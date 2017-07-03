@@ -3,7 +3,6 @@ package tatakae.entities;
 import java.awt.Point;
 import java.util.ArrayList;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Ellipse;
@@ -146,11 +145,8 @@ public class Spinner implements HitObject {
 
 	@Override
 	public void render(Graphics g, int circleSize, Image hitcircle, Image hitcircleoverlay, Image reverseArrow) {
-		g.setColor(Color.white);
-		g.setAntiAlias(false);
-		g.setLineWidth(size / 50);
-		g.drawOval(x - (size - 100) / 2, 50, size - 100, size - 100);
-		this.drawSpinnerApproarchCircle(g);
+		g.drawImage(hitcircle, x - hitcircle.getWidth() / 2, 0);
+		this.drawSpinnerApproarchCircle(g, hitcircleoverlay);
 	}
 
 	@Override
@@ -163,12 +159,11 @@ public class Spinner implements HitObject {
 		return size;
 	}
 
-	private void drawSpinnerApproarchCircle(Graphics g) {
+	private void drawSpinnerApproarchCircle(Graphics g, Image image) {
 		double percent = (double) duration / (double) length;
 		int width = (int) ((size - 100) * (1 - percent));
 		int x = this.x - width / 2;
 		int y = (size - width) / 2;
-		g.setLineWidth((float) ((size / 50) * (1 - percent)));
-		g.drawOval(x, y, width, width);
+		g.drawImage(image.getScaledCopy(width, width), x, y);
 	}
 }

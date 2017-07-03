@@ -142,4 +142,32 @@ public class ImageHandler {
 			return null;
 		}
 	}
+	
+	/**
+	 * Rerurns a spinner-circle image.
+	 * 
+	 * @return spinner-circle
+	 */
+	public static Image buildSpinnerCircle(int size){
+		try {
+			return new Image("./resources/spinner-circle.png").getScaledCopy(size, size);
+		} catch (SlickException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Rerurns a spinner-approachcircle image.
+	 * 
+	 * @return spinner-approachcircle
+	 */
+	public static Image buildSpinnerApproachCircle(){
+		try {
+			return new Image("./resources/spinner-approachcircle.png");
+		} catch (SlickException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

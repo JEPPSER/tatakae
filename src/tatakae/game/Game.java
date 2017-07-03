@@ -41,6 +41,8 @@ public class Game extends BasicGame {
 	private Image hitcircle;
 	private Image hitcircleoverlay;
 	private Image reverseArrow;
+	private Image spinnercircle;
+	private Image spinnerapproachcircle;
 	private AudioManager audioManager;
 
 	private HitObject currentObject;
@@ -106,6 +108,8 @@ public class Game extends BasicGame {
 		hitcircle = ImageHandler.buildHitcircle(circleSize);
 		hitcircleoverlay = ImageHandler.buildHitcircleOverlay(circleSize);
 		reverseArrow = ImageHandler.buildReverseArrow(circleSize);
+		spinnercircle = ImageHandler.buildSpinnerCircle(container.getHeight());
+		spinnerapproachcircle = ImageHandler.buildSpinnerApproachCircle();
 		added = new ArrayList<HitObject>();
 		hitImages = new ArrayList<HitImage>();
 		startTime = System.currentTimeMillis() + startDelay;
@@ -371,7 +375,11 @@ public class Game extends BasicGame {
 	 */
 	private void drawHitObjects(Graphics g) {
 		for (int i = added.size() - 1; i >= 0; i--) {
-			added.get(i).render(g, circleSize, hitcircle, hitcircleoverlay, reverseArrow);
+			if(added.get(i).getClass() == Spinner.class){
+				added.get(i).render(g, circleSize, spinnercircle, spinnerapproachcircle, reverseArrow);
+			} else {
+				added.get(i).render(g, circleSize, hitcircle, hitcircleoverlay, reverseArrow);
+			}
 			if (added.get(i).getClass() == Slider.class) {
 				if (time >= added.get(i).getTime()) {
 					int x = added.get(i).getCurrentSliderPoint(time).x;
