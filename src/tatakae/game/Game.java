@@ -123,7 +123,9 @@ public class Game extends BasicGame {
 		time = System.currentTimeMillis() - startTime; // Update time.
 		Input input = container.getInput();
 		controller.control(input);
-		this.registerCircle();
+		if(index < map.getList().size()){
+			this.registerCircle();
+		}
 		this.removeCircle(input);
 		this.setDuration();
 	}
