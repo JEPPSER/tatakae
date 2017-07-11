@@ -155,7 +155,7 @@ public class Slider extends Circle {
 		angles = new float[2];
 		// Getting back angle.
 		Point one = newTrack.get(newTrack.size() / kicks - 1);
-		Point two = newTrack.get(newTrack.size() / kicks - 3);
+		Point two = newTrack.get(newTrack.size() / kicks - 2);
 		angles[0] = (float) Math.toDegrees(Math.atan2(two.y - one.y, two.x - one.x));
 		// Getting forward angle.
 		one = newTrack.get(0);

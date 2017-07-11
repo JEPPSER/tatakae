@@ -121,6 +121,10 @@ public class Game extends BasicGame {
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
 		time = System.currentTimeMillis() - startTime; // Update time.
+		if(time > 0 && !started){
+			audioManager.playSong();
+			started = true;
+		}
 		Input input = container.getInput();
 		controller.control(input);
 		if(index < map.getList().size()){
