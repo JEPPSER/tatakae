@@ -13,6 +13,36 @@ import org.newdawn.slick.SlickException;
 public class ImageHandler {
 	
 	/**
+	 * Builds and returns an image for the exit button.
+	 * 
+	 * @param height
+	 * @return exit button image
+	 */ 
+	public static Image buildExitButton(int height){
+		try {
+			return new Image("./resources/exitbutton.png").getScaledCopy(height / 5, height / 5);
+		} catch (SlickException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Builds and returns an image for the play button.
+	 * 
+	 * @param height
+	 * @return play button image
+	 */ 
+	public static Image buildPlayButton(int height){
+		try {
+			return new Image("./resources/playbutton.png").getScaledCopy(height / 5, height / 5);
+		} catch (SlickException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
 	 * Builds and returns an image for the reverse arrow.
 	 * 
 	 * @param circleSize
