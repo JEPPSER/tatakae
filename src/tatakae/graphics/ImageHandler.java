@@ -50,7 +50,7 @@ public class ImageHandler {
 	 */
 	public static Image buildCursorTrail(int cursorSize) {
 		try {
-			return new Image("./resources/cursortrail.png").getScaledCopy(cursorSize / 4, cursorSize / 4);
+			return new Image("./resources/cursortrail.png").getScaledCopy(cursorSize, cursorSize);
 		} catch (SlickException e) {
 			e.printStackTrace();
 			return null;
@@ -137,6 +137,34 @@ public class ImageHandler {
 	public static Image buildHit50() {
 		try {
 			return new Image("./resources/hit50.png");
+		} catch (SlickException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Rerurns a spinner-circle image.
+	 * 
+	 * @return spinner-circle
+	 */
+	public static Image buildSpinnerCircle(int size){
+		try {
+			return new Image("./resources/spinner-circle.png").getScaledCopy(size, size);
+		} catch (SlickException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Rerurns a spinner-approachcircle image.
+	 * 
+	 * @return spinner-approachcircle
+	 */
+	public static Image buildSpinnerApproachCircle(){
+		try {
+			return new Image("./resources/spinner-approachcircle.png");
 		} catch (SlickException e) {
 			e.printStackTrace();
 			return null;

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -12,6 +11,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Ellipse;
+import org.newdawn.slick.state.BasicGameState;
+import org.newdawn.slick.state.StateBasedGame;
 
 import tatakae.audio.AudioManager;
 import tatakae.builder.BeatmapBuilder;
@@ -19,6 +20,7 @@ import tatakae.controllers.GameController;
 import tatakae.entities.Beatmap;
 import tatakae.graphics.HitImage;
 import tatakae.entities.Slider;
+import tatakae.entities.Spinner;
 import tatakae.entities.HitObject;
 import tatakae.entities.OD;
 import tatakae.graphics.ApproachCircle;
@@ -32,7 +34,7 @@ import tatakae.graphics.ImageHandler;
  * @version 0.00.00
  * @name Game.java
  */
-public class Game extends BasicGame {
+public class Game extends BasicGameState {
 
 	private GameController controller;
 	private Cursor cursor;
@@ -40,6 +42,8 @@ public class Game extends BasicGame {
 	private Image hitcircle;
 	private Image hitcircleoverlay;
 	private Image reverseArrow;
+	private Image spinnercircle;
+	private Image spinnerapproachcircle;
 	private AudioManager audioManager;
 
 	private HitObject currentObject;
@@ -65,13 +69,9 @@ public class Game extends BasicGame {
 	private int missTickCount = 0;
 	private int hitTickCount = 0;
 
-	public Game(String title) {
-		super(title);
-	}
-
 	/**
-	 * Method that starts a play. It takes a beatmap file
-	 * and creates a play based on that.
+	 * Method that starts a play. It takes a beatmap file and creates a play
+	 * based on that.
 	 * 
 	 * @param map
 	 * @param width
@@ -83,42 +83,50 @@ public class Game extends BasicGame {
 		BeatmapBuilder builder = new BeatmapBuilder(resConverter, width, height);
 		this.map = builder.readFile(map);
 		circleSize = (int) ((109 - 9 * this.map.getCircleSize()) * resConverter);
+		startTime = System.currentTimeMillis() + startDelay;
+		currentObject = this.map.getList().get(0);
+		approachRate = calculateAr(this.map.getAr());
+		od = new OD(this.map.getOd());
+		hitcircle = ImageHandler.buildHitcircle(circleSize);
+		hitcircleoverlay = ImageHandler.buildHitcircleOverlay(circleSize);
+		reverseArrow = ImageHandler.buildReverseArrow(circleSize);
+		spinnercircle = ImageHandler.buildSpinnerCircle(height);
+		spinnerapproachcircle = ImageHandler.buildSpinnerApproachCircle();
 	}
-	
+
 	/**
 	 * Render loop that renders all objects on screen.
 	 */
-	public void render(GameContainer container, Graphics g) throws SlickException {
+	public void render(GameContainer container, StateBasedGame sbg, Graphics g) throws SlickException {
 		Input input = container.getInput();
 		this.drawHitImages(g);
 		this.drawHitObjects(g);
-		cursor.render(g, container.getFPS(), input);
+		cursor.render(g, input);
 		this.drawAccuracy(g, container);
 	}
 
 	@Override
-	public void init(GameContainer container) throws SlickException {
+	public void init(GameContainer container, StateBasedGame sbg) throws SlickException {
 		audioManager = new AudioManager();
 		controller = new GameController(this);
 		cursor = new Cursor(cursorSize);
 		container.setMouseCursor(new Image(32, 32), 0, 0);
-		hitcircle = ImageHandler.buildHitcircle(circleSize);
-		hitcircleoverlay = ImageHandler.buildHitcircleOverlay(circleSize);
-		reverseArrow = ImageHandler.buildReverseArrow(circleSize);
 		added = new ArrayList<HitObject>();
 		hitImages = new ArrayList<HitImage>();
-		startTime = System.currentTimeMillis() + startDelay;
-		currentObject = map.getList().get(0);
-		approachRate = calculateAr(map.getAr());
-		od = new OD(map.getOd());
 	}
 
 	@Override
-	public void update(GameContainer container, int delta) throws SlickException {
+	public void update(GameContainer container, StateBasedGame sbg, int delta) throws SlickException {
 		time = System.currentTimeMillis() - startTime; // Update time.
+		if(time > 0 && !started){
+			audioManager.playSong();
+			started = true;
+		}
 		Input input = container.getInput();
 		controller.control(input);
-		this.registerCircle();
+		if(index < map.getList().size()){
+			this.registerCircle();
+		}
 		this.removeCircle(input);
 		this.setDuration();
 	}
@@ -151,8 +159,8 @@ public class Game extends BasicGame {
 	}
 
 	/**
-	 * Returns the current time of the play. This is how long
-	 * the play has been going for.
+	 * Returns the current time of the play. This is how long the play has been
+	 * going for.
 	 * 
 	 * @return time
 	 */
@@ -236,11 +244,18 @@ public class Game extends BasicGame {
 	}
 
 	/**
-	 * Registers a circle when it is supposed to show up on screen.
-	 * It adds the circle to the added list.
+	 * Registers a circle when it is supposed to show up on screen. It adds the
+	 * circle to the added list.
 	 */
 	private void registerCircle() {
-		if (index < map.getList().size() && time >= map.getList().get(index).getTime() - approachRate) {
+		if (map.getList().get(index).getClass() == Spinner.class && time >= map.getList().get(index).getTime()) {
+			added.add(map.getList().get(index));
+			index++;
+			if (added.size() == 1) {
+				currentObject = added.get(0);
+			}
+		} else if (map.getList().get(index).getClass() != Spinner.class && index < map.getList().size()
+				&& time >= map.getList().get(index).getTime() - approachRate) {
 			added.add(map.getList().get(index)); // add circle to list.
 			index++;
 			if (added.size() == 1) {
@@ -258,6 +273,13 @@ public class Game extends BasicGame {
 		if (!added.isEmpty() && currentObject != null) {
 			if (currentObject.getClass() == Slider.class) {
 				sliderLogic(input);
+			} else if (currentObject.getClass() == Spinner.class) {
+				if (time >= currentObject.getTime() + currentObject.getLength()) {
+					added.remove(currentObject);
+					if (!added.isEmpty()) {
+						currentObject = added.get(0);
+					}
+				}
 			} else if (time >= added.get(0).getTime() + od.getHit50()) {
 				timePassed = 0;
 				added.remove(currentObject);
@@ -356,7 +378,11 @@ public class Game extends BasicGame {
 	 */
 	private void drawHitObjects(Graphics g) {
 		for (int i = added.size() - 1; i >= 0; i--) {
-			added.get(i).render(g, circleSize, hitcircle, hitcircleoverlay, reverseArrow);
+			if(added.get(i).getClass() == Spinner.class){
+				added.get(i).render(g, circleSize, spinnercircle, spinnerapproachcircle, reverseArrow);
+			} else {
+				added.get(i).render(g, circleSize, hitcircle, hitcircleoverlay, reverseArrow);
+			}
 			if (added.get(i).getClass() == Slider.class) {
 				if (time >= added.get(i).getTime()) {
 					int x = added.get(i).getCurrentSliderPoint(time).x;
@@ -365,13 +391,15 @@ public class Game extends BasicGame {
 					g.drawOval(x - circleSize, y - circleSize, circleSize * 2, circleSize * 2);
 				}
 			}
-			ApproachCircle.drawApproachCircle(g, added.get(i), circleSize, approachRate);
+			if (added.get(i).getClass() != Spinner.class) {
+				ApproachCircle.drawApproachCircle(g, added.get(i), circleSize, approachRate);
+			}
 		}
 	}
 
 	/**
-	 * Converts the ar given in the beatmap file to a long variable
-	 * representing the time a circle should be visible on screen.
+	 * Converts the ar given in the beatmap file to a long variable representing
+	 * the time a circle should be visible on screen.
 	 * 
 	 * @param ar
 	 * @return
@@ -386,5 +414,10 @@ public class Game extends BasicGame {
 			}
 		}
 		return init;
+	}
+
+	@Override
+	public int getID() {
+		return 2;
 	}
 }

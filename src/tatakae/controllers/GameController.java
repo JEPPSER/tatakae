@@ -6,6 +6,7 @@ import org.newdawn.slick.Input;
 import tatakae.audio.AudioManager;
 import tatakae.graphics.HitImage;
 import tatakae.entities.Slider;
+import tatakae.entities.Spinner;
 import tatakae.game.Game;
 import tatakae.graphics.ImageHandler;
 
@@ -50,7 +51,8 @@ public class GameController {
 	 * @param input
 	 */
 	private void circleHit(Input input) {
-		if (game.getCurrentObject() != null && game.getCurrentObject().getClass() != Slider.class) {
+		if (game.getCurrentObject() != null && game.getCurrentObject().getClass() != Slider.class
+				&& game.getCurrentObject().getClass() != Spinner.class) {
 			if (game.getCurrentObject().getHitBox().contains(input.getMouseX(), input.getMouseY())) {
 				// Hit is too early or late so it counts as a miss.
 				if (game.getTime() < game.getCurrentObject().getTime() - game.getOd().getHit50()
