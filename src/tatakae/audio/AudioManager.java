@@ -20,7 +20,7 @@ public class AudioManager {
 
 	private Sound hitSound;
 	private Sound missSound;
-	private Music song;
+	public Music song;
 	private Converter converter;
 
 	public AudioManager() throws SlickException {

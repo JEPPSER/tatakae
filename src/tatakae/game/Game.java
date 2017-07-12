@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -12,6 +11,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Ellipse;
+import org.newdawn.slick.state.BasicGameState;
+import org.newdawn.slick.state.StateBasedGame;
 
 import tatakae.audio.AudioManager;
 import tatakae.builder.BeatmapBuilder;
@@ -33,7 +34,7 @@ import tatakae.graphics.ImageHandler;
  * @version 0.00.00
  * @name Game.java
  */
-public class Game extends BasicGame {
+public class Game extends BasicGameState {
 
 	private GameController controller;
 	private Cursor cursor;
@@ -68,10 +69,6 @@ public class Game extends BasicGame {
 	private int missTickCount = 0;
 	private int hitTickCount = 0;
 
-	public Game(String title) {
-		super(title);
-	}
-
 	/**
 	 * Method that starts a play. It takes a beatmap file and creates a play
 	 * based on that.
@@ -86,40 +83,40 @@ public class Game extends BasicGame {
 		BeatmapBuilder builder = new BeatmapBuilder(resConverter, width, height);
 		this.map = builder.readFile(map);
 		circleSize = (int) ((109 - 9 * this.map.getCircleSize()) * resConverter);
+		startTime = System.currentTimeMillis() + startDelay;
+		currentObject = this.map.getList().get(0);
+		approachRate = calculateAr(this.map.getAr());
+		od = new OD(this.map.getOd());
+		hitcircle = ImageHandler.buildHitcircle(circleSize);
+		hitcircleoverlay = ImageHandler.buildHitcircleOverlay(circleSize);
+		reverseArrow = ImageHandler.buildReverseArrow(circleSize);
+		spinnercircle = ImageHandler.buildSpinnerCircle(height);
+		spinnerapproachcircle = ImageHandler.buildSpinnerApproachCircle();
 	}
 
 	/**
 	 * Render loop that renders all objects on screen.
 	 */
-	public void render(GameContainer container, Graphics g) throws SlickException {
+	public void render(GameContainer container, StateBasedGame sbg, Graphics g) throws SlickException {
 		Input input = container.getInput();
 		this.drawHitImages(g);
 		this.drawHitObjects(g);
-		cursor.render(g, container.getFPS(), input);
+		cursor.render(g, input);
 		this.drawAccuracy(g, container);
 	}
 
 	@Override
-	public void init(GameContainer container) throws SlickException {
+	public void init(GameContainer container, StateBasedGame sbg) throws SlickException {
 		audioManager = new AudioManager();
 		controller = new GameController(this);
 		cursor = new Cursor(cursorSize);
 		container.setMouseCursor(new Image(32, 32), 0, 0);
-		hitcircle = ImageHandler.buildHitcircle(circleSize);
-		hitcircleoverlay = ImageHandler.buildHitcircleOverlay(circleSize);
-		reverseArrow = ImageHandler.buildReverseArrow(circleSize);
-		spinnercircle = ImageHandler.buildSpinnerCircle(container.getHeight());
-		spinnerapproachcircle = ImageHandler.buildSpinnerApproachCircle();
 		added = new ArrayList<HitObject>();
 		hitImages = new ArrayList<HitImage>();
-		startTime = System.currentTimeMillis() + startDelay;
-		currentObject = map.getList().get(0);
-		approachRate = calculateAr(map.getAr());
-		od = new OD(map.getOd());
 	}
 
 	@Override
-	public void update(GameContainer container, int delta) throws SlickException {
+	public void update(GameContainer container, StateBasedGame sbg, int delta) throws SlickException {
 		time = System.currentTimeMillis() - startTime; // Update time.
 		if(time > 0 && !started){
 			audioManager.playSong();
@@ -417,5 +414,10 @@ public class Game extends BasicGame {
 			}
 		}
 		return init;
+	}
+
+	@Override
+	public int getID() {
+		return 2;
 	}
 }

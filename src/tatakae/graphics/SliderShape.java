@@ -3,7 +3,6 @@ package tatakae.graphics;
 import java.awt.Point;
 import java.util.ArrayList;
 
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Ellipse;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;

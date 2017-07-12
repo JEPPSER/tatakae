@@ -39,7 +39,7 @@ public class Cursor {
 	 * @param fps
 	 * @param input
 	 */
-	public void render(Graphics g, int fps, Input input) {
+	public void render(Graphics g, Input input) {
 		int x = input.getMouseX();
 		int y = input.getMouseY();
 		Point point = new Point(x, y);
