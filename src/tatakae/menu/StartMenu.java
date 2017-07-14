@@ -72,19 +72,35 @@ public class StartMenu extends BasicGameState {
 		return exithit;
 	}
 
+	/**
+	 * Method for expanding the play button when it is hovered over.
+	 */
 	public void playHover() {
 		playbutton = playbutton.getScaledCopy((int) (playhit.getWidth() * 1.2), (int) (playhit.getWidth() * 1.2));
+		playhit.setLocation((int) (playhit.getX() - playhit.getWidth() * 0.1), (int) (playhit.getY() - playhit.getWidth() * 0.1));
 	}
 
+	/**
+	 * Method for shrinking the exit button when it is not hovered over.
+	 */
 	public void playNotHover() {
 		playbutton = playbutton.getScaledCopy((int) (playhit.getWidth() * 1), (int) (playhit.getWidth() * 1));
+		playhit.setLocation((int) (playhit.getX() + playhit.getWidth() * 0.105), (int) (playhit.getY() + playhit.getWidth() * 0.105));
 	}
 	
+	/**
+	 * Method for expanding the play button when it is hovered over.
+	 */
 	public void exitHover() {
 		exitbutton = exitbutton.getScaledCopy((int) (exithit.getWidth() * 1.2), (int) (exithit.getWidth() * 1.2));
+		exithit.setLocation((int) (exithit.getX() - exithit.getWidth() * 0.1), (int) (exithit.getY() - exithit.getWidth() * 0.1));
 	}
 
+	/**
+	 * Method for shrinking the exit button when it is not hovered over.
+	 */
 	public void exitNotHover() {
 		exitbutton = exitbutton.getScaledCopy((int) (exithit.getWidth() * 1), (int) (exithit.getWidth() * 1));
+		exithit.setLocation((int) (exithit.getX() + exithit.getWidth() * 0.105), (int) (exithit.getY() + exithit.getWidth() * 0.105));
 	}
 }
