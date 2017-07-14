@@ -13,6 +13,25 @@ import org.newdawn.slick.SlickException;
 public class ImageHandler {
 	
 	/**
+	 * Builds and returns an image for the back button.
+	 * 
+	 * @param height
+	 * @return back button
+	 */
+	public static Image buildBackButton(int height){
+		try {
+			Image image = new Image("./resources/menu-back.png");
+			int w = image.getWidth();
+			int h = image.getHeight();
+			double k = (double) h / (double) w;
+			return image.getScaledCopy((int) (height * 0.2), (int) (height * 0.2 * k));
+		} catch (SlickException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
 	 * Builds and returns an image for the exit button.
 	 * 
 	 * @param height
