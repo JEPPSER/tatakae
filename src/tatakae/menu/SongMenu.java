@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -42,8 +41,8 @@ public class SongMenu extends BasicGameState {
 		songRects = new ArrayList<Rectangle>();
 		for (int i = 0; i < 12; i++) {
 			visibleSongs.add(songList.get(i));
-			songRects.add(new Rectangle((int) (container.getWidth() * 0.5), (int) (i * container.getHeight() * 0.1),
-					(int) (container.getWidth() * 0.5), (int) (container.getHeight() * 0.1)));
+			songRects.add(new Rectangle((int) (container.getWidth() * 0.6), (int) (i * container.getHeight() * 0.1),
+					(int) (container.getWidth() * 0.4), (int) (container.getHeight() * 0.1)));
 		}
 		controller = new SongMenuController(songRects, visibleSongs, songList);
 	}

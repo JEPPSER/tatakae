@@ -18,6 +18,7 @@ public class SongMenuController {
 	private ArrayList<File> allSongs;
 	private String path;
 	private boolean isDown = false;
+	private boolean moving = false;
 	private int firstY;
 
 	public SongMenuController(ArrayList<Rectangle> songBoxes, ArrayList<File> songList, ArrayList<File> allSongs) {
@@ -42,8 +43,8 @@ public class SongMenuController {
 				songList.remove(0);
 				songList.add(allSongs.get(index + 1));
 				songBoxes.add(
-						new Rectangle((int) (container.getWidth() * 0.5), songBoxes.get(songBoxes.size() - 1).getMaxY(),
-								(int) (container.getWidth() * 0.5), (int) (container.getHeight() * 0.1)));
+						new Rectangle((int) (container.getWidth() * 0.6), songBoxes.get(songBoxes.size() - 1).getMaxY(),
+								(int) (container.getWidth() * 0.4), (int) (container.getHeight() * 0.1)));
 			}
 		} else if (songBoxes.get(songBoxes.size() - 1).getY() > container.getHeight()) {
 			int index = allSongs.indexOf(songList.get(0));
@@ -51,35 +52,44 @@ public class SongMenuController {
 				songBoxes.remove(songBoxes.size() - 1);
 				songList.remove(songList.size() - 1);
 				songList.add(0, allSongs.get(index - 1));
-				songBoxes.add(0, new Rectangle((int) (container.getWidth() * 0.5),
-						songBoxes.get(0).getY() - songBoxes.get(0).getHeight(), (int) (container.getWidth() * 0.5),
-						(int) (container.getHeight() * 0.1)));
+				songBoxes.add(0,
+						new Rectangle((int) (container.getWidth() * 0.6),
+								songBoxes.get(0).getY() - songBoxes.get(0).getHeight(),
+								(int) (container.getWidth() * 0.4), (int) (container.getHeight() * 0.1)));
 			}
 		}
 	}
 
 	private void scrolling(Input input) {
-		if (input.isMouseButtonDown(0) && isDown == false) {
+		if (input.isMouseButtonDown(0) && !isDown) {
 			isDown = true;
 			firstY = input.getMouseY();
 		} else if (input.isMouseButtonDown(0)) {
 			int distanceY = input.getMouseY() - firstY;
+			if (!(distanceY == 0)) {
+				moving = true;
+			}
 			for (int i = 0; i < songBoxes.size(); i++) {
 				songBoxes.get(i).setY(songBoxes.get(i).getY() + distanceY);
 			}
 			firstY = input.getMouseY();
 		} else if (!input.isMouseButtonDown(0)) {
-			isDown = false;
-		} else if (input.isMousePressed(0)) {
-			for (int i = 0; i < songBoxes.size(); i++) {
-				if (songBoxes.get(i).contains(input.getMouseX(), input.getMouseY())) {
-					path = songList.get(i).getAbsolutePath();
-					System.out.println(path);
+			if (isDown && !moving) {
+				for (int i = 0; i < songBoxes.size(); i++) {
+					if (songBoxes.get(i).contains(input.getMouseX(), input.getMouseY())) {
+						songSelected(songList.get(i));
+					}
 				}
 			}
+			isDown = false;
+			moving = false;
 		}
 	}
 	
+	private void songSelected(File song){
+		System.out.println(song.getAbsolutePath());
+	}
+
 	private void startPlay(StateBasedGame sbg) {
 		sbg.enterState(2);
 		Game game = (Game) sbg.getState(2);

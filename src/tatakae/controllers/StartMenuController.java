@@ -15,6 +15,7 @@ public class StartMenuController {
 	private StartMenu menu;
 	private boolean isPlayHovering = false;
 	private boolean isExitHovering = false;
+	private boolean isDown = false;
 
 	public StartMenuController(StartMenu menu) {
 		this.menu = menu;
@@ -39,6 +40,11 @@ public class StartMenuController {
 	public void control(Input input, StateBasedGame sbg) {
 		playControl(input, sbg);
 		exitControl(input, sbg);
+		if(input.isMouseButtonDown(0)){
+			isDown = true;
+		} else {
+			isDown = false;
+		}
 	}
 
 	/**
@@ -53,7 +59,7 @@ public class StartMenuController {
 				menu.playHover();
 				isPlayHovering = true;
 			}
-			if (input.isMousePressed(0)) {
+			if (input.isMouseButtonDown(0) && !isDown) {
 				sbg.enterState(1);
 			}
 		} else if (isPlayHovering && !bigplayhit.contains(input.getMouseX(), input.getMouseY())) {
@@ -74,7 +80,7 @@ public class StartMenuController {
 				menu.exitHover();
 				isExitHovering = true;
 			}
-			if (input.isMousePressed(0)) {
+			if (input.isMousePressed(0) && !isDown) {
 				System.exit(0);
 			}
 		} else if (isExitHovering && !bigexithit.contains(input.getMouseX(), input.getMouseY())) {
