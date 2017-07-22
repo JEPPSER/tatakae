@@ -9,7 +9,6 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -27,7 +26,8 @@ public class SongMenu extends BasicGameState {
 	private Image backImage;
 	private ArrayList<File> songList;
 	private ArrayList<File> visibleSongs;
-	private ArrayList<Rectangle> songRects;
+	private ArrayList<SongBox> songRects;
+	private ArrayList<DiffBox> diffs;
 	private int cursorSize = 70;
 
 	@Override
@@ -38,13 +38,14 @@ public class SongMenu extends BasicGameState {
 		songList = loader.loadSongs();
 		backImage = ImageHandler.buildBackButton(container.getHeight());
 		visibleSongs = new ArrayList<File>();
-		songRects = new ArrayList<Rectangle>();
+		songRects = new ArrayList<SongBox>();
+		diffs = new ArrayList<DiffBox>();
 		for (int i = 0; i < 12; i++) {
 			visibleSongs.add(songList.get(i));
-			songRects.add(new Rectangle((int) (container.getWidth() * 0.6), (int) (i * container.getHeight() * 0.1),
+			songRects.add(new SongBox((int) (container.getWidth() * 0.6), (int) (i * container.getHeight() * 0.1),
 					(int) (container.getWidth() * 0.4), (int) (container.getHeight() * 0.1)));
 		}
-		controller = new SongMenuController(songRects, visibleSongs, songList);
+		controller = new SongMenuController(songRects, visibleSongs, songList, diffs);
 	}
 
 	@Override
@@ -55,6 +56,11 @@ public class SongMenu extends BasicGameState {
 		for (int i = 0; i < visibleSongs.size(); i++) {
 			g.draw(songRects.get(i));
 			g.drawString(visibleSongs.get(i).getName(), songRects.get(i).getX() + 10, songRects.get(i).getCenterY());
+		}
+		for (int i = 0; i < diffs.size(); i++) {
+			g.draw(diffs.get(i));
+			g.drawString(diffs.get(i).getDiff(), diffs.get(i).getX() + 10,
+					diffs.get(i).getY() + diffs.get(i).getHeight() / 2);
 		}
 		cursor.render(g, input);
 	}
