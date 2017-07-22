@@ -74,16 +74,19 @@ public class Game extends BasicGameState {
 	 * based on that.
 	 * 
 	 * @param map
+	 * @param songPath
 	 * @param width
 	 * @param height
 	 * @throws FileNotFoundException
+	 * @throws SlickException 
 	 */
-	public void playMap(File map, int width, int height) throws FileNotFoundException {
+	public void playMap(File map, String songPath, int width, int height) throws FileNotFoundException, SlickException {
+		audioManager = new AudioManager(songPath);
+		controller = new GameController(this);
 		resConverter = (double) width / (double) 872;
 		BeatmapBuilder builder = new BeatmapBuilder(resConverter, width, height);
 		this.map = builder.readFile(map);
 		circleSize = (int) ((109 - 9 * this.map.getCircleSize()) * resConverter);
-		startTime = System.currentTimeMillis() + startDelay;
 		currentObject = this.map.getList().get(0);
 		approachRate = calculateAr(this.map.getAr());
 		od = new OD(this.map.getOd());
@@ -92,6 +95,7 @@ public class Game extends BasicGameState {
 		reverseArrow = ImageHandler.buildReverseArrow(circleSize);
 		spinnercircle = ImageHandler.buildSpinnerCircle(height);
 		spinnerapproachcircle = ImageHandler.buildSpinnerApproachCircle();
+		startTime = System.currentTimeMillis() + startDelay;
 	}
 
 	/**
@@ -107,8 +111,6 @@ public class Game extends BasicGameState {
 
 	@Override
 	public void init(GameContainer container, StateBasedGame sbg) throws SlickException {
-		audioManager = new AudioManager();
-		controller = new GameController(this);
 		cursor = new Cursor(cursorSize);
 		container.setMouseCursor(new Image(32, 32), 0, 0);
 		added = new ArrayList<HitObject>();
@@ -118,9 +120,13 @@ public class Game extends BasicGameState {
 	@Override
 	public void update(GameContainer container, StateBasedGame sbg, int delta) throws SlickException {
 		time = System.currentTimeMillis() - startTime; // Update time.
-		if(time > 0 && !started){
+		if(time > -100 && !started){
 			audioManager.playSong();
 			started = true;
+		}
+		if(time > map.getList().get(map.getList().size() - 1).getTime() + 3000){
+			sbg.enterState(1);
+			audioManager.stopSong();
 		}
 		Input input = container.getInput();
 		controller.control(input);

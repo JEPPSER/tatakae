@@ -7,8 +7,11 @@ import java.util.Scanner;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import javazoom.jlgui.basicplayer.BasicPlayer;
+import javazoom.jlgui.basicplayer.BasicPlayerException;
 import tatakae.game.Game;
 import tatakae.menu.DiffBox;
 import tatakae.menu.SongBox;
@@ -27,6 +30,8 @@ public class SongMenuController {
 	private int firstY;
 	private int diffCount;
 	private SongMenu menu;
+	private BasicPlayer player;
+	private String songPath;
 
 	public SongMenuController(ArrayList<SongBox> songBoxes, ArrayList<File> songList, ArrayList<File> allSongs,
 			ArrayList<DiffBox> diffs, SongMenu menu) {
@@ -35,13 +40,14 @@ public class SongMenuController {
 		this.allSongs = allSongs;
 		this.diffs = diffs;
 		this.menu = menu;
+		player = new BasicPlayer();
 	}
 
 	public void control(Input input, StateBasedGame sbg, GameContainer container) {
 		if (input.isKeyPressed(Input.KEY_ESCAPE)) {
 			System.exit(1);
 		}
-		scrolling(input, container);
+		scrolling(input, container, sbg);
 		songBoxLoading(container);
 		setXPositions(container);
 		setYPositions(container);
@@ -80,7 +86,7 @@ public class SongMenuController {
 		}
 	}
 
-	private void scrolling(Input input, GameContainer container) {
+	private void scrolling(Input input, GameContainer container, StateBasedGame sbg) {
 		if (input.isMouseButtonDown(0) && !isDown) {
 			firstY = input.getMouseY();
 			isDown = true;
@@ -99,11 +105,19 @@ public class SongMenuController {
 			lastY = input.getMouseY();
 		} else if (!input.isMouseButtonDown(0)) {
 			if (isDown && !moving) { // Click!!
+				// Clicking a difficulty box
 				for (int i = 0; i < diffs.size(); i++) {
 					if (diffs.get(i).contains(input.getMouseX(), input.getMouseY())) {
 						System.out.println(diffs.get(i).getPath());
+						try {
+							player.stop();
+						} catch (BasicPlayerException e) {
+							e.printStackTrace();
+						}
+						startPlay(sbg, diffs.get(i).getPath(), songPath);
 					}
 				}
+				// Clicking a song box
 				for (int i = 0; i < songBoxes.size(); i++) {
 					if (songBoxes.get(i).contains(input.getMouseX(), input.getMouseY())) {
 						diffCount = 0;
@@ -150,6 +164,14 @@ public class SongMenuController {
 		}
 		selectedIndex = allSongs.indexOf(songList.get(songBoxes.indexOf(box)));
 		getDiffs(files, container);
+		try {
+			player.stop();
+			player.open(new File(songPath));
+			player.play();
+			player.setGain(0.1);
+		} catch (BasicPlayerException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void getDiffs(File[] files, GameContainer container) {
@@ -165,11 +187,16 @@ public class SongMenuController {
 					String mapper = "";
 					String diff = "";
 					if (files[i].getName().split("\\[").length > 1) {
-						diff = files[i].getName().split("\\[")[1].replaceAll("].osu", "");
+						String[] split = files[i].getName().split("\\[");
+						diff = split[split.length - 1].replaceAll("].osu", "");
 					}
 					boolean isStandard = true;
 					while (scan.hasNextLine()) {
 						line = scan.nextLine();
+						if (line.contains("AudioFilename: ") && j == 0) {
+							songPath = songBoxes.get(songList.indexOf(allSongs.get(selectedIndex))).getPath() + "/"
+									+ line.split(": ")[1];
+						}
 						if (line.contains("Mode:")) {
 							if (line.endsWith("0")) {
 								diffCount++;
@@ -211,13 +238,14 @@ public class SongMenuController {
 		}
 	}
 
-	private void startPlay(StateBasedGame sbg) {
+	private void startPlay(StateBasedGame sbg, String mapPath, String songPath) {
 		sbg.enterState(2);
 		Game game = (Game) sbg.getState(2);
 		try {
-			game.playMap(new File("./resources/9mm Parabellum Bullet - Inferno (Monstrata) [Excruciating Extra].osu"),
-					sbg.getContainer().getWidth(), sbg.getContainer().getHeight());
+			game.playMap(new File(mapPath), songPath, sbg.getContainer().getWidth(), sbg.getContainer().getHeight());
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (SlickException e) {
 			e.printStackTrace();
 		}
 	}

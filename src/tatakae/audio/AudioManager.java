@@ -20,22 +20,26 @@ public class AudioManager {
 
 	private Sound hitSound;
 	private Sound missSound;
-	public Music song;
+	private Music song;
 	private Converter converter;
 
-	public AudioManager() throws SlickException {
+	public AudioManager(String songPath) throws SlickException {
 		hitSound = new Sound("./resources/drum-hitnormal.wav");
 		missSound = new Sound("./resources/combobreak.wav");
 		converter = new Converter();
-		if(new File("./songs/song.wav").exists()){
+		if (new File("./songs/song.wav").exists()) {
 			new File("./songs/song.wav").delete();
 		}
 		try {
-			converter.convert("./resources/audio.mp3", "./songs/song.wav");
+			converter.convert(songPath, "./songs/song.wav");
 			song = new Music("./songs/song.wav");
 		} catch (JavaLayerException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void stopSong(){
+		song.stop();
 	}
 
 	/**
