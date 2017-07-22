@@ -43,25 +43,36 @@ public class SongMenu extends BasicGameState {
 		for (int i = 0; i < 12; i++) {
 			visibleSongs.add(songList.get(i));
 			songRects.add(new SongBox((int) (container.getWidth() * 0.6), (int) (i * container.getHeight() * 0.1),
-					(int) (container.getWidth() * 0.4), (int) (container.getHeight() * 0.1)));
+					(int) (container.getWidth() * 0.4), (int) (container.getHeight() * 0.1),
+					songList.get(i).getAbsolutePath()));
 		}
-		controller = new SongMenuController(songRects, visibleSongs, songList, diffs);
+		controller = new SongMenuController(songRects, visibleSongs, songList, diffs, this);
 	}
 
 	@Override
 	public void render(GameContainer container, StateBasedGame sbg, Graphics g) throws SlickException {
 		Input input = container.getInput();
-		drawMenuBar(g, container);
-		g.setColor(Color.white);
+		if(songImage != null){
+			g.drawImage(songImage, 0, 0);
+		}
+		// Draw song boxes
 		for (int i = 0; i < visibleSongs.size(); i++) {
+			g.setColor(new Color(0, 0, 0, 150));
+			g.fill(songRects.get(i));
+			g.setColor(Color.white);
 			g.draw(songRects.get(i));
 			g.drawString(visibleSongs.get(i).getName(), songRects.get(i).getX() + 10, songRects.get(i).getCenterY());
 		}
+		// Draw diff boxes
 		for (int i = 0; i < diffs.size(); i++) {
+			g.setColor(Color.black);
+			g.fill(diffs.get(i));
+			g.setColor(Color.white);
 			g.draw(diffs.get(i));
 			g.drawString(diffs.get(i).getDiff(), diffs.get(i).getX() + 10,
 					diffs.get(i).getY() + diffs.get(i).getHeight() / 2);
 		}
+		drawMenuBar(g, container);
 		cursor.render(g, input);
 	}
 
@@ -75,10 +86,17 @@ public class SongMenu extends BasicGameState {
 	public int getID() {
 		return 1;
 	}
+	
+	public void setImage(Image songImage){
+		this.songImage = songImage;
+	}
 
 	private void drawMenuBar(Graphics g, GameContainer container) {
 		g.setColor(Color.black);
 		g.fillRect((float) 0, (float) (container.getHeight() * 0.9), (float) container.getWidth(),
+				(float) (container.getHeight() * 0.1));
+		g.setColor(Color.white);
+		g.drawRect((float) 0, (float) (container.getHeight() * 0.9), (float) container.getWidth(),
 				(float) (container.getHeight() * 0.1));
 		g.drawImage(backImage, 0, (float) (container.getHeight() * 0.9));
 	}

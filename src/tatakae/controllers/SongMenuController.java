@@ -7,12 +7,12 @@ import java.util.Scanner;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
-import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
 
 import tatakae.game.Game;
 import tatakae.menu.DiffBox;
 import tatakae.menu.SongBox;
+import tatakae.menu.SongMenu;
 
 public class SongMenuController {
 
@@ -21,18 +21,20 @@ public class SongMenuController {
 	private ArrayList<File> allSongs;
 	private ArrayList<DiffBox> diffs;
 	private int selectedIndex;
-	private String path;
 	private boolean isDown = false;
 	private boolean moving = false;
+	private int lastY;
 	private int firstY;
 	private int diffCount;
+	private SongMenu menu;
 
 	public SongMenuController(ArrayList<SongBox> songBoxes, ArrayList<File> songList, ArrayList<File> allSongs,
-			ArrayList<DiffBox> diffs) {
+			ArrayList<DiffBox> diffs, SongMenu menu) {
 		this.songBoxes = songBoxes;
 		this.songList = songList;
 		this.allSongs = allSongs;
 		this.diffs = diffs;
+		this.menu = menu;
 	}
 
 	public void control(Input input, StateBasedGame sbg, GameContainer container) {
@@ -56,11 +58,12 @@ public class SongMenuController {
 					songBoxes.add(new SongBox((int) (container.getWidth() * 0.6),
 							(float) (songBoxes.get(songBoxes.size() - 1).getMaxY()
 									+ container.getHeight() * 0.1 * (diffCount - 1)),
-							(int) (container.getWidth() * 0.4), (int) (container.getHeight() * 0.1)));
+							(int) (container.getWidth() * 0.4), (int) (container.getHeight() * 0.1),
+							allSongs.get(index + 1).getAbsolutePath()));
 				} else {
 					songBoxes.add(new SongBox((int) (container.getWidth() * 0.6),
 							songBoxes.get(songBoxes.size() - 1).getMaxY(), (int) (container.getWidth() * 0.4),
-							(int) (container.getHeight() * 0.1)));
+							(int) (container.getHeight() * 0.1), allSongs.get(index + 1).getAbsolutePath()));
 				}
 			}
 		}
@@ -70,21 +73,21 @@ public class SongMenuController {
 				songBoxes.remove(songBoxes.size() - 1);
 				songList.remove(songList.size() - 1);
 				songList.add(0, allSongs.get(index - 1));
-				songBoxes.add(0,
-						new SongBox((int) (container.getWidth() * 0.6),
-								songBoxes.get(0).getY() - songBoxes.get(0).getHeight(),
-								(int) (container.getWidth() * 0.4), (int) (container.getHeight() * 0.1)));
+				songBoxes.add(0, new SongBox((int) (container.getWidth() * 0.6),
+						songBoxes.get(0).getY() - songBoxes.get(0).getHeight(), (int) (container.getWidth() * 0.4),
+						(int) (container.getHeight() * 0.1), allSongs.get(index - 1).getAbsolutePath()));
 			}
 		}
 	}
 
 	private void scrolling(Input input, GameContainer container) {
 		if (input.isMouseButtonDown(0) && !isDown) {
-			isDown = true;
 			firstY = input.getMouseY();
+			isDown = true;
+			lastY = input.getMouseY();
 		} else if (input.isMouseButtonDown(0)) {
-			int distanceY = input.getMouseY() - firstY;
-			if (!(distanceY == 0)) {
+			int distanceY = input.getMouseY() - lastY;
+			if (input.getMouseY() - firstY > 20 || input.getMouseY() - firstY < -20) {
 				moving = true;
 			}
 			for (int i = 0; i < songBoxes.size(); i++) {
@@ -93,9 +96,14 @@ public class SongMenuController {
 			for (int i = 0; i < diffs.size(); i++) {
 				diffs.get(i).setY(diffs.get(i).getY() + distanceY);
 			}
-			firstY = input.getMouseY();
+			lastY = input.getMouseY();
 		} else if (!input.isMouseButtonDown(0)) {
-			if (isDown && !moving) {
+			if (isDown && !moving) { // Click!!
+				for (int i = 0; i < diffs.size(); i++) {
+					if (diffs.get(i).contains(input.getMouseX(), input.getMouseY())) {
+						System.out.println(diffs.get(i).getPath());
+					}
+				}
 				for (int i = 0; i < songBoxes.size(); i++) {
 					if (songBoxes.get(i).contains(input.getMouseX(), input.getMouseY())) {
 						diffCount = 0;
@@ -131,7 +139,11 @@ public class SongMenuController {
 		}
 	}
 
-	private void songSelected(File song, Rectangle box, GameContainer container) {
+	private void songSelected(File song, SongBox box, GameContainer container) {
+		if (box.getImage() != null) {
+			float scale = (float) ((double) container.getWidth() / (double) box.getImage().getWidth());
+			menu.setImage(box.getImage().getScaledCopy(scale));
+		}
 		File[] files = song.listFiles();
 		for (int i = 1; i < songBoxes.size(); i++) {
 			songBoxes.get(i).setY(songBoxes.get(i - 1).getMaxY());
@@ -151,7 +163,10 @@ public class SongMenuController {
 					String artist = "";
 					String title = "";
 					String mapper = "";
-					String diff = files[i].getName().split("\\[")[1].replaceAll("].osu", "");
+					String diff = "";
+					if (files[i].getName().split("\\[").length > 1) {
+						diff = files[i].getName().split("\\[")[1].replaceAll("].osu", "");
+					}
 					boolean isStandard = true;
 					while (scan.hasNextLine()) {
 						line = scan.nextLine();
@@ -185,6 +200,7 @@ public class SongMenuController {
 						temp.setTitle(title);
 						temp.setDiff(diff);
 						temp.setMapper(mapper);
+						temp.setPath(files[i].getAbsolutePath());
 						diffs.add(temp);
 						j++;
 					}
